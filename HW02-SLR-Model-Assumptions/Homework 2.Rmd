@@ -1,0 +1,323 @@
+---
+title: "Homework 2"
+author: "<center> < Jacob Fisher > <center>"
+subtitle: <center> <h1>Simple Linear Regression Model Assumptions</h1> </center>
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{=html}
+<style type="text/css">
+h1.title {
+  font-size: 40px;
+  text-align: center;
+}
+</style>
+```
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggfortify)  # plot lm objects using ggplot instead of base R
+library(car)  # Box-Cox transformation
+library(lmtest) ## BP test
+```
+
+## Data and Description
+
+One key component of determining appropriate speed limits is the amount of distance that is required to stop at a given speed. For example, in residential neighborhoods, when pedestrians are commonly in the roadways, it is important to be able to stop in a very short distance to ensure pedestrian safety. The speed of vehicles may be useful for determining the distance required to stop at that given speed, which can aid public officials in determining speed limits.
+
+The Stopping Distance data set compares the **distance (column 2)** (in feet) required for a car to stop on a certain rural road against the **speed (column 1)** (MPH) of the car. Download the StoppingDistance.txt file from Learning Suite, and put it in the same folder as this R Markdown file.
+
+There's one thing we're going to ignore. When the speed is 0 MPH, then the stopping distance is 0 ft. We won't impose this in the model, but it's pretty easy to do.
+
+#### 0. Replace the text "\< PUT YOUR NAME HERE \>" (above next to "author:") with your full name.
+
+#### 1. Read in the data set, and call the tibble "stop". Print a summary of the data and make sure the data makes sense.
+
+```{r}
+stop<-read.csv("StoppingDistance.txt", header= T, sep = " ")
+summary(stop)
+```
+
+#### 2. Create a scatterplot of the data with variables on the appropriate axes (think about which variable makes the most sense to be the response). Make you plot look professional (make sure the axes labels are descriptive, the plot is square, etc.).
+
+```{r, fig.align='center'}
+stop_base_plot <- ggplot(data = stop) +
+  geom_point(mapping = aes(Speed, Distance)) +
+  theme(aspect.ratio = 1) + 
+  xlab("Car Speed (mph)") + ylab("Stopping Distance (feet)")
+stop_base_plot
+```
+
+#### 3. Briefly describe the relationship between Speed and Distance. (Hint: you should use 2 or 3 key words.)
+
+Speed and distance appear to be positively correlated in a strong linear fashion.
+
+#### 4. Add the OLS regression line to the scatterplot you created in question 2 (note: if you receive a warning about rows with missing values, you may need to adjust an axis limit using `scale_y_continuous(limits = c(###, ###))`).
+
+```{r, fig.align='center'}
+stop_base_plot + 
+  geom_smooth(mapping = aes(x = Speed, y = Distance),
+              method = "lm", 
+              se = FALSE) 
+```
+
+#### 5. (a) Apply linear regression to the data(no transformations). (b) Print out a summary of the results from the `lm` function. (c) Save the residuals and fitted values to the `stop` tibble.
+
+```{r}
+stop.lm <- lm(Distance ~ Speed, data = stop)
+summary(stop.lm)
+stop$residuals <- stop.lm$residuals
+stop$fitted_Distance <- stop.lm$fitted.values
+```
+
+#### 6. Mathematically write out the fitted simple linear regression model for this data set using the coefficients you found above. Do not use "x" and "y" in your model - use variable names that are fairly descriptive, and do not use matrix notation.
+
+$\text{Stopping Distance}_i = \beta_0+\beta_1*\text{Speed}_i+\epsilon_i\overset{\mathrm{iid}}{\sim} N(0,\sigma^2)\ $
+
+### Questions 7-12 involve using diagnostics to determine if the linear regression assumptions are met. For each assumption, (1) perform appropriate diagnostics to determine if the assumption is violated, and (2) explain whether or not you think the assumption is violated and why you think that.
+
+#### 7. (L) X vs Y is linear (use at least two diagnostic tools)
+
+```{r, fig.align='center'}
+#Scatterplot
+stop_base_plot <- ggplot(data = stop) +
+  geom_point(mapping = aes(Speed, Distance)) +
+  theme(aspect.ratio = 1) + 
+  xlab("Car Speed (mph)") + ylab("Stopping Distance (feet)")
+stop_base_plot
+
+#Resid v. fitted values
+stop_resid_vs_fit <- autoplot(stop.lm, which = 1, ncol = 1, nrow = 1) +
+  theme(aspect.ratio = 1)
+stop_resid_vs_fit
+
+#Resid v. predicted value
+ggplot(data = stop) +
+  geom_point(mapping = aes(x = Speed, y = residuals)) +
+  theme(aspect.ratio = 1)
+```
+
+Based on our scatterplot, we may reasonably say that there is a linear relationship, although when looking at the Residual v. Fitted and Residual v. Predicted Values plots, we may be less comfortable making the linearity assumption.
+
+#### 8. (I) The residuals are independent (no diagnostic tools - just think about how the data was collected and briefly write your thoughts)
+
+This assumption is difficult to test statistically unless we know the data are in a natural order. Generally, if you have a random sample, the residuals will be independent. We do not have any indication of how the data was collected, so we cannot tell if the assumption is met.
+
+#### 9. (N) The residuals are normally distributed and centered at zero (use at least three diagnostic tools)
+
+```{r, fig.align='center'}
+#Boxplot
+stop_boxplot <- ggplot(data = stop) +
+  geom_boxplot(mapping = aes(y = residuals)) +
+  theme(aspect.ratio = 1)
+stop_boxplot
+
+#Histogram
+stop_hist <- ggplot(data = stop) + 
+  geom_histogram(mapping = aes(x = residuals, y = ..density..), #..density.. allows us to compare to a normal curve
+                 binwidth = 2) +
+  stat_function(fun = dnorm, #overlays normal curve
+                color = "red", 
+                size = 2,
+                args = list(mean = mean(stop$residuals), 
+                            sd = sd(stop$residuals))) +
+  theme(aspect.ratio = 1)
+stop_hist
+
+#QQ-Plot
+stop_qq <- autoplot(stop.lm, which = 2, ncol = 1, nrow = 1) +
+  theme(aspect.ratio = 1)
+stop_qq
+```
+
+The boxplot suggests normality with the exception of the three outliers at the top, which suggest a slight right-skewness. The histogram expresses the same right skewness, but relative normality. Our QQ-plot again highlights our outliers which warrant our attention.
+
+#### 10. (E) The residuals have equal/constant variance across all values of X (use two diagnostic tools)
+
+```{r, fig.align='center'}
+#Resid v. fitted values
+stop_resid_vs_fit
+
+
+#Breusch-Pagan
+lmtest::bptest(stop.lm)
+```
+
+Our Residual v. Fitted values plot gives us cause to believe that the normality assumption is violated, but the p-value of 0.0001376 returned by the Breusch-Pagan test allows us to definitively reject the normality assumption.
+
+#### 11. Examine whether there are no influential points (use at least three diagnostic tools)
+
+```{r, fig.align='center'}
+# get Cook's distance values for all observations
+stop$cooksd <- cooks.distance(stop.lm)
+
+# plot Cook's distance against the observation number
+ggplot(data = stop) + 
+  geom_point(mapping = aes(x = as.numeric(rownames(stop)), 
+                           y = cooksd)) +
+  ylab("Cook's Distance") +
+  xlab("Observation Number") +
+  geom_hline(mapping = aes(yintercept = 4 / length(cooksd)),
+             color = "red", 
+             linetype = "dashed") +
+  theme(aspect.ratio = 1)
+
+
+# print a list of potential outliers according to Cook's distance
+stop %>% 
+  mutate(rowNum = row.names(stop)) %>%  # save original row numbers 
+  filter(cooksd > 4 / length(cooksd)) %>%  # select potential outliers
+  arrange(desc(cooksd))  # order from largest Cook's distance to smallest
+
+
+
+#Boxplot
+stop_boxplot
+
+
+#Histogram
+stop_hist
+```
+
+The histogram tells us that the values in the mass on the far-right tail may be outliers, but it is not easily apparent. The Cook's distance formula tells us that there are four outliers, while, when looking at the associated graph, there appear to be two (maybe three) outliers. Our boxplot indicates that we have three outliers.
+
+#### 12. Speculate whether additional predictor variables are not required (no diagnostic tools - just think about the variables you have and if there are other variables you think would help predict the response)
+
+When looking at the scatterplot, one could conclude that there may be an exponential relationship between stopping distance and car speed, but it may take some convincing to get others to conclude that. Thus, with the current information, I do not think there are any additionally significant predictor variables.
+
+#### 13. Based on your analysis of the diagnostic measures, briefly discuss why this simple linear regression model on the raw data (not transformed) is *not* appropriate.
+
+One may be comfortable accepting the linearity assumption given our data, but others may not. It is, however, abundantly clear that the equal variance assumption should be rejected, based on both the Breusch-Pagan test and visual inspection of the Residual v. fitted values plot.
+
+#### 14. Fix the model by making any necessary transformations. Justify the transformation you chose in words (why did you choose to transform just x, just y, or both?). (Note: if boxCox(mod) throws an error, replace mod with the formula for the linear model, y \~ x.) (Note: you will most likely need to repeat questions 14 and 18 until you are satisfied with the transformation you chose. Only then should you fill out this section - I only want to see the model you end up choosing, not all of your attempted models.)
+
+```{r, fig.align='center'}
+bc <- boxCox(stop$Distance ~ stop$Speed)
+bc$x[which.max(bc$y)]
+```
+
+\< your response here \>
+
+```{r, fig.align='center'}
+#sqrty
+stop$Distance_sqrt <- sqrt(stop$Distance)
+stop_sqrt.lm<-lm(Distance_sqrt ~ Speed, data = stop)
+summary(stop_sqrt.lm)
+
+stop$residuals_sqrt <- stop_sqrt.lm$residuals
+stop$fittedDistance_sqrt <- stop_sqrt.lm$fitted.values
+```
+
+### Now, in Questions 15-18, re-check your transformed model and verify that the assumptions (the assumptions that were addressed in the questions above) are met. Provide a brief discussion about how each of the previously violated assumptions are now satisfied. Also, provide the code you used to assess adherence to the assumptions. (Note that transforming will not change your responses about (I) the residuals being independent and (R) additional predictor variables not being required, so we will skip these assumptions here.)
+
+#### 15. (L) Linearity (use at least two diagnostic tools)
+
+```{r, fig.align='center'}
+
+#sqrty
+ggplot(data = stop) +
+  geom_point(mapping = aes(x = Speed, y = Distance_sqrt)) +
+  ylab("sqrt(Distance)") +
+  theme(aspect.ratio = 1)
+
+stop_resid_vs_fit_sqrt <- autoplot(stop_sqrt.lm, 
+                                    which = 1, ncol = 1, nrow = 1) +
+  theme(aspect.ratio = 1)
+stop_resid_vs_fit_sqrt
+```
+
+In the scatterplot, the trend appears linear, so this assumption appears to be met. In our Residual v. fitted plot, our solid, colored line roughly follows the dotted, horizontal line at 0, suggesting that we can assume a linear relationship between Distance to stop and Speed.
+
+#### 16. (N) The residuals are normally distributed and centered at zero (use at least three diagnostic tools)
+
+```{r, fig.align='center'}
+#Boxplot
+stop_boxplot_sqrt <- ggplot(data = stop) +
+  geom_boxplot(mapping = aes(y = residuals_sqrt)) +
+  theme(aspect.ratio = 1)
+stop_boxplot_sqrt
+
+#Histogram
+stop_hist_sqrt <- ggplot(data = stop) + 
+  geom_histogram(mapping = aes(x = residuals_sqrt, y = ..density..), #..density.. allows us to compare to a normal curve
+                 binwidth = 2) +
+  stat_function(fun = dnorm, #overlays normal curve
+                color = "red", 
+                size = 2,
+                args = list(mean = mean(stop$residuals), 
+                            sd = sd(stop$residuals))) +
+  theme(aspect.ratio = 1)
+stop_hist_sqrt
+
+
+#Wilk-Shapiro Test
+shapiro.test(stop$residuals_sqrt)
+```
+
+Our boxplot is nearly perfect in every way. It is centered at zero, has nearly identically sized boxes and whiskers, respectively, and has no outliers. A similar things could be said about our histogram as it displays no skewness. The Wilk-Shapiro test result of a .8072 p-value tells us that we fail to reject the normality assumption. 
+
+#### 17. (E) The residuals have equal/constant variance across all values of X (use two diagnostic tools)
+
+```{r, fig.align='center'}
+#Resid v. fitted
+stop_resid_vs_fit_sqrt
+
+#Breusch-Pagan
+lmtest::bptest(stop_sqrt.lm)
+
+```
+
+The residuals should be equally spread around the horizontal line. That is largely true. The Breusch-Pagan test, with a .0592 p-value, does not give us strong grounds to reject the equal variance assumption.
+
+#### 18. Examine whether there are no influential points (use at least three diagnostic tools)
+
+```{r, fig.align='center'}
+#Histogram
+stop_hist_sqrt
+
+#Boxplot
+stop_boxplot_sqrt
+
+#QQ-Plot
+stop_qq_sqrt <- autoplot(stop_sqrt.lm, which = 2, ncol = 1, nrow = 1) +
+  theme(aspect.ratio = 1)
+stop_qq_sqrt
+```
+
+According to both the histogram and the boxplot, there are no outliers. When looking at the QQ-plot, we notice possible outliers, but they are not easily identifiable as such.
+
+#### 19. Mathematically write out the fitted simple linear regression model for this data set using the coefficients you found above from your transformed model. Do not use "x" and "y" in your model - use variable names that are fairly descriptive, and do not use matrix notation.
+
+$\sqrt{\text{Stopping Distance}_i} = \beta_0+\beta_1*\text{Speed}_i+\epsilon_i\overset{\mathrm{iid}}{\sim} N(0,\sigma^2)\ $
+
+#### 20. Plot your new fitted *curve* on the scatterplot of the original data (on the original scale - not the transformed scale). Do you think this curve fits the data better than the line you previously fit?
+
+```{r}
+Speed_values <- seq(min(stop$Speed), 
+                     max(stop$Speed), 
+                     length = 10000)  
+# Predictions of **sqrt(Distance)** across those values of Speed
+sqrt_Distance_preds <- predict(stop_sqrt.lm, 
+                         newdata = data.frame(Speed = Speed_values))
+# Predictions of **Distance** (back-transformed) across those value of Speed
+Distance_preds <- (sqrt_Distance_preds)^2  # use ^2 to "undo" the sqrt transform
+# Store results in a data frame for plotting
+preds <- data.frame("Speed_values" = Speed_values, 
+                    "Distance_preds" = Distance_preds)
+# Plot the predictions on the original scale (to get a curved line)
+stop_base_plot + 
+  geom_line(data = preds, 
+            mapping = aes(x = Speed_values, y = Distance_preds), 
+            size = 1.5, color ="blue")
+```
+
+This looks like a more accurate estimation of the trend that describes the relationship between Car Speed and Stopping Distance.
+
+#### 21. Briefly summarize what you learned, personally, from this analysis about the statistics, model fitting process, etc.
+
+I gained a much better understanding how to construct and interpret plots for data sets. Additionally, I was able to learn several different ways to transform data to be more accurately interpretable. I also learned several good tests to use in R that give numerical values for checking assumptions,
+
+#### 22. Briefly summarize what you learned from this analysis *to a non-statistician*. Write a few sentences about (1) the purpose of this data set and analysis and (2) what you learned about this data set from your analysis. Write your response as if you were addressing a business manager (avoid using statistics jargon) and just provide the main take-aways.
+
+This data set gave us car speeds and the associated distances it takes for a car going that speed to stop. After our analysis, we can use our result to determine what safe speed limits should be for different areas of populated areas.  Through our analysis, we found that the speed and distance are not linearly correlated because not all of the necessary assumptions of the data were met. As a result, we had to transform the data. Through doing this, we found that the square root of the distance is linearly correlated to the car speed, so we can say that “Average square root of the Stopping Distance increases by 25.25% for every 1 MPH increase in Speed”.

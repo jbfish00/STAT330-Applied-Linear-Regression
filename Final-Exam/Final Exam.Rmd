@@ -1,0 +1,298 @@
+---
+title: "Final Exam"
+subtitle: <center> < JACOB FISHER > <center>
+output: html_document
+---
+
+<style type="text/css">
+h1.title {
+font-size: 40px;
+text-align: center;
+}
+</style>
+
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(error = TRUE,warning = FALSE, message = FALSE)
+```
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(bestglm)
+library(corrplot)  # for the correlation matrix
+library(pROC)  # for the ROC curve
+library(ROCR)
+library(gridExtra)
+
+```
+
+## Data and Description
+
+In this analysis, you will work with a dataset of $n = 712$ individuals who were on the Titanic. This is a subset of a Kaggle competition dataset that includes only complete cases (If you are interested, it's at <https://www.kaggle.com/c/titanic/data>.). In this dataset, we have the survival status of these individuals, as well as information that may help explain who survived and who didn't (See Table below.). The goal of this analysis is to understand which factors influenced the likelihood or probability of survival. In other words, our goal is inference, not prediction.
+
+| Variable | Definition                      | Key                                            | Variable Type |
+|:-------------|:----------------|:--------------------------|:-------------|
+| Pclass   | Ticket class                    | 1 = 1st, 2 = 2nd, 3 = 3rd                      | Categorical   |
+| Sex      | Sex                             |                                                | Categorical   |
+| Age      | Age in years                    |                                                | Quantitative  |
+| SibSp    | \# of siblings / spouses aboard |                                                | Quantitative  |
+| Parch    | \# of parents / children aboard |                                                | Quantitative  |
+| Fare     | Passenger fare                  |                                                | Quantitative  |
+| Embarked | Port of Embarkation             | C = Cherbourg, Q = Queenstown, S = Southampton | Categorical   |
+| Survived | Survived Incident               | 0 = No, 1 = Yes                                | Binary        |
+
+Remember that the ticket class (Pclass) variable is a category, so you will have to run something similar to the following before model fitting:
+
+```{r eval = FALSE}
+# dat = read.csv("Titanic_complete.csv",stringsAsFactors = TRUE)
+# dat$Pclass = factor(dat$Pclass)
+```
+
+If you don't run this, you won't get the right answers.
+
+Because I will ask you to use the `bestglm` package in R, the "Survived" variable is the last column in the dataset. I provide some useful code in the exam. All other relevant code can be adapted from the CHD coding exercise. I will ask you to fit and compare various models. In addition, I'll ask you to interpret model output. Read each question carefully, and respond completely. Please be concise. Do your best. Write as though I am your audience.
+
+This exam is open-note and class material. You may use the internet for coding questions, but you may not use internet tools for other help. You may use a dictionary. But you may only speak with me about the exam. Please upload the exam as a PDF to Learning Suite. Also, include your R Markdown file. You must turn in a the exam exam by 11:59 PM on Tuesday, April 25. Late exams will not be graded, so start early. I will use originality checks to verify that you are presenting your own work.
+
+### 0 (a). Replace the text "\< PUT YOUR NAME HERE \>" (above next to "author:") with your full name. Read
+
+Put your dataset in the same location as your markdown file.
+
+### 0 (b). Read in the data set. Make sure the `Pclass` variable is a factor.
+
+```{r}
+dat = read.csv("C:/Users/jbren/Desktop/STAT_330/Final/Titanic_complete.csv",stringsAsFactors = TRUE)
+dat$Pclass = factor(dat$Pclass)
+```
+
+### 1. What is the response (outcome of interest)? What are the covariates/explanatory variable(s)?
+
+The response variable is survival (0,1). The explanatory variables include Ticket class, sex, age, number of siblings/spouses aboard, number of parents/children aboard, fare price, and port of embarkation.
+
+### 2. Outline the goals of the analysis and discuss which modeling framework would be appropriate for these data and why.
+
+The goal of our analysis is to determine which factors influenced the likelihood of survival in any significant way. Because the outcome variable is binary, it would be appropriate to use logistic regression.
+
+### 3. Using the \`\`bestglm'' package in R with best subsets selection, select a model using a criterion of your choice.
+
+```{r}
+surv_best_subsets_bic <- bestglm(as.data.frame(dat),
+                                  IC = "AIC",
+                                  method = "exhaustive",
+                                  TopModels = 1,
+                                  family = binomial) #if you want to do glm,  you NEED this line
+summary(surv_best_subsets_bic$BestModel)
+```
+
+#### a) Justify your choice of model selection criterion
+
+AIC is typically better for inference as it has often has greater explanatory power and more variables. BIC penalizes more and therefore decreases the number of variables in the model.
+
+#### b) Describe intuitively how this model selection criterion balances the trade-off of model fit and model size/complexity.
+
+If we have more variables, we will typically have a model that is fit closer to our data. AIC more than BIC will fit a model closer to the data. BIC on the other hand is more interested in having a simpler model, thus it will throw away more of the covariates.
+
+#### c) Write out the \`\`best'' model using Greek letters, explicitly indicating what variables are included.
+
+$$
+\text{log}(\frac{\pi_i}{1-\pi_i}) = 
+\beta_0 + 
+\beta_1*\text{I}(\text{Pclass}_i = 2)+
+\beta_2*\text{I}(\text{Pclass}_i = 3)+
+\beta_3*\text{I}(\text{sex}_i = male)+
+\beta_4*\text{age}+
+\beta_5*\text{SibSp}
+$$
+
+### 4. For this model, outline the assumptions and whether they appear or you believe them to be valid for this dataset. Use logic arguments for assumptions if needed. Include plots, if appropriate. If you do not think that the assumptions are met, then discuss how you may improve upon the current model.
+
+```{r}
+#Monotonicity
+scatter.smooth(x = dat$Age, y = (dat$Survived))
+
+scatter.smooth(x = dat$Pclass, y = (dat$Survived))
+
+scatter.smooth(x = dat$SibSp, y = (dat$Survived))
+
+scatter.smooth(x = dat$Sex, y = (dat$Survived))
+
+
+
+```
+
+Monotonicity: Looking at the above plots for age and sibling/spouse count, we see reason to not accept the monotonicity assumption. There are short regions for which it does not hold. To remedy this we could create multiple models for different ranges of age and SibSp count. We could also take the observations that did not have siblings/spouses on board and either throw them out or make them another variable altogether.
+
+Independence of Observations: We are not told the method by which these 712 passengers were chosen out of the 2240 that were aboard the titanic. If this was a random sampling then we can assume independence. Since there is no indication, we can go along with the independence assumption, but there is no reason to accept or reject that assumption.
+
+Bernoulli Distributed: For this we may refer to the monotonicity assumption.
+
+## Comparing Models with Interactions and/or Nonlinearity
+
+Potentially useful code:
+
+```{r}
+model_glm <- glm(Survived ~ Pclass + Sex + Age + SibSp, data = dat, family = binomial)
+
+model_glm_poly <- glm(Survived ~ Pclass + Sex + poly(Age,3) + SibSp, data = dat, family = binomial)
+
+model_glm_int <- glm(Survived ~ Sex*Pclass + Age + SibSp, data = dat, family = binomial)
+
+model_glm_int2 <- glm(Survived ~ Sex*Pclass + Sex*Age + SibSp, data = dat, family = binomial)
+
+```
+
+### 5. Regardless of the model selected in the previous section, fit the following four models presented below. For each model, report the BIC and state which model is best in terms of BIC.
+
+-   Use Pclass, Sex, Age, and SibSp as covariates.
+
+```{r}
+BIC(model_glm)
+```
+
+675.448
+
+-   Use Pclass, Sex, and SibSp as covariates. Use a cubic polynomial for Age.
+
+```{r}
+BIC(model_glm_poly)
+```
+
+679.6785
+
+-   Use Pclass, Sex, Age, and SibSp as covariates. In addition, include an interaction between Sex and Pclass.
+
+```{r}
+BIC(model_glm_int)
+```
+
+654.8688
+
+-   Use Pclass, Sex, Age, and SibSp as covariates. In addition, include interactions between (i) Pclass and Sex and (ii) Age and Sex.
+
+```{r}
+BIC(model_glm_int2)
+```
+
+659.198
+
+Our model with class, Sex, Age, and SibSp as covariates and an interaction between Sex and Pclass (model_glm_int) had the lowest BIC of 654.8688.
+
+### 6. This is not cross-validation; rather, it is an in-sample check of model performance. For the best model from Problem 5, report these five criteria. Half-credit is possible if you are clear about what you are calculating:
+
+-   Misclassification rate using a cutoff probability of 0.5
+
+```{r}
+surv_preds <- predict.glm(model_glm_int, type = "response")
+preds <- surv_preds > .5
+conf_mat <- table("truth" = dat$Survived, "predicted" = preds)
+conf_mat
+```
+
+```{r}
+true_pos <- conf_mat[2,2]
+true_neg <- conf_mat[1,1]
+false_pos<- conf_mat[1,2]
+false_neg<- conf_mat[2,1]
+```
+
+We have a misclassification rate of 38.135%.
+
+-   Sensitivity using a cutoff probability of 0.5
+
+```{r}
+true_pos/(true_pos + false_neg)
+
+```
+
+We have a sensitivity of 0.66667.
+
+-   Specificity using a cutoff probability of 0.5
+
+```{r}
+
+true_neg/(true_neg+false_pos)
+
+```
+
+We have a specificity of 0.91038.
+
+-   AUC
+
+```{r}
+my_roc <- roc(dat$Survived, surv_preds)
+auc(my_roc)
+```
+
+We have an AUC of 0.8686.
+
+-   Pseudo $R^2$
+
+```{r}
+1 - (model_glm_int$deviance / model_glm_int$null.deviance)
+```
+
+We have a pseudo $R^2$ of 0.3731691.
+
+### 7. Intuitively describe what the term poly(Age,3) in model_glm_poly means in terms of the model?
+
+The poly term fits the age variable using a cubic polynomial. It makes three separate age terms: $age_i$, $age_i^2$, and $age_i^3$.
+
+## Interpreting the Model
+
+For these interpretation questions, we will use the output for a generalized linear model with Pclass, Sex, Age, and SibSp as covariates, as well as interactions between (1) Pclass and Sex and (2) Age and Sex. See Table below for coefficient estimates, standard errors, $z$-values, and p-values. *Using this model does not mean that this is (or is not) the \`\`best'' model for the previous section. Be careful about reference groups (Pclass = 1, Sex = female).*
+
+|                   | Estimate | Std. Error | $z$ value | p-value          |
+|:------------------|:---------|:-----------|:----------|:-----------------|
+| (Intercept)       | 4.7756   | 0.8450     | 5.6512    | $\approx 0.0000$ |
+| Sex=male          | -2.6185  | 0.9494     | -2.7581   | 0.0058           |
+| Pclass=2          | -1.1006  | 0.7382     | -1.4909   | 0.1360           |
+| Pclass=3          | -3.9047  | 0.6796     | -5.7455   | $\approx 0.0000$ |
+| Age               | -0.0341  | 0.0146     | -2.3347   | 0.0196           |
+| SibSp             | -0.3648  | 0.1180     | -3.0913   | 0.0020           |
+| Sex=male:Pclass=2 | -1.0074  | 0.8404     | -1.1987   | 0.2306           |
+| Sex=male:Pclass=3 | 1.6765   | 0.7559     | 2.2177    | 0.0266           |
+| Sex=male:Age      | -0.0269  | 0.0179     | -1.5052   | 0.1323           |
+
+```{r}
+new_glm = glm(Survived ~ Pclass + Sex + Age + SibSp +
+                Pclass*Sex + Age*Sex,
+              data = dat, family = binomial)
+summary(new_glm)
+
+```
+
+### 8. Why does Table above have $z$-statistics rather than $t$-statistics?
+
+Logistic regression uses z-values and z-tests instead of t-tests because variance depends on the mean and not the residuals, thus no estimation on additional parameters is necessary.
+
+### 9. Interpret $\hat{\beta}_0$ in the context of the problem.
+
+For a female, aged 0, in first class and no siblings or spouses aboard, the log odds of her survival are 4.7756.
+
+### 10. Construct a 95% confidence interval for $e^{\beta_5}$ (the natural exponent of the regression coefficient for SibSp) and interpret this interval in context.
+
+```{r}
+exp(confint(new_glm))
+```
+
+We are 95% confident that for every 1 additional spouse or sibling aboard with a passenger, the odds a passenger survives is between 0.544952 and 0.867195 times greater, holding all else constant.
+
+### 11. For this question, be clear and careful about whether the answer depends on other variables. Only a complete answer will receive full credit. Holding Pclass and SibSp constant, for a one year increase in age, what is the expected or average (see below)
+
+-   change in the log-odds of survival?
+
+Holding Pclass and SibSp constant, for a one year increase in age, the log-odds of survival increases by 2.09606 for males and 4.7415 for females.
+
+-   percent change in odds of survival?
+
+Holding Pclass and SibSp constant, for a one year increase in age, the log-odds of survival increases by 8.13406 for males and 114.60598 for females.
+
+### 12. For a fixed age and SibSp, what is the estimated change in the log-odds of survival having a third-class (Pclass) ticket relative to a first-class ticket if
+
+-   the individual is female?
+
+For a fixed age and SibSp, the estimated change in the log-odds of survival having a third-class (Pclass) ticket relative to a first-class ticket for a female is -3.90469.
+
+-   the individual is male?
+
+For a fixed age and SibSp, the estimated change in the log-odds of survival having a third-class (Pclass) ticket relative to a first-class ticket for a male is -2.22824.

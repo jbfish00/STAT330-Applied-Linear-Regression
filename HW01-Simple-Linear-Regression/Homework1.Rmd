@@ -1,0 +1,150 @@
+---
+title: "Homework 1 | STAT 330"
+subtitle: <center> <h1>Simple Linear Regression</h1> </center>
+author: <center> < Jacob Fisher > <center>
+output: html_document
+---
+
+<style type="text/css">
+h1.title {
+  font-size: 40px;
+  text-align: center;
+}
+</style>
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+```
+
+## Data and Description
+
+Energy can be produced from wind using windmills. Choosing a site for a wind farm (i.e. the location of the windmills), however, can be a multi-million dollar gamble. If wind is inadequate at the site, then the energy produced over the lifetime of the wind farm can be much less than the cost of building the operation. Hence, accurate prediction of wind speed at a candidate site can be an important component in the decision to build or not to build. Since energy produced varies as the square of the wind speed, even small errors in prediction can have serious consequences.
+
+One possible solution to help predict wind speed at a candidate site is to use wind speed at a nearby reference site. A reference site is a nearby location where the wind speed is already being monitored and should, theoretically, be similar to the candidate site. Using information from the reference site will allow windmill companies to know the wind speed at the candidate site without going through a costly data collection period, if the reference site is a good predictor. 
+
+The Windmill data set contains measurements of wind speed (in meters per second m/s) at a **candidate site (CSpd) (column 1)** and at an accompanying **reference site (RSpd) (column 2)** for 1,116 areas. Download the Windmill.txt file from Learning Suite, and put it in the same folder as this R Markdown file.
+
+#### 0. Replace the text "< PUT YOUR NAME HERE >" (above next to "author:") with your full name.
+
+#### 1. Briefly explain why simple linear regression is an appropriate tool to use in this situation.
+
+Since the variables seem that they depend upon each other, simple linear regression may be appropriate and will be if certain criteria are met (e.g. normally distributed residuals).
+
+#### 2. Read in the data set, and call the tibble "wind". Print a summary of the data and make sure the data makes sense. 
+
+```{r}
+wind<-read.csv("C:/Users/jbren/OneDrive/Desktop/STAT 330/HW 01/Windmill.txt",header = TRUE, sep = " ")
+summary(wind)
+```
+
+#### 3. What is the outcome variable in this situation? (Think about which variable makes the most sense to be the response.)
+
+The wind speed at the candidate site is our outcome variable.
+
+#### 4. What is the explanatory variable in this situation?
+
+The wind speed at the reference site is our explanatory variable.
+
+#### 5. Create a scatterplot of the data with variables on the appropriate axes. Make the plot square. Add descriptive axis labels with appropriate units. Save the plot to a variable and print the plot.
+
+```{r, fig.align='center'}
+wind.base.plot <- ggplot(wind, aes(RSpd, CSpd)) + 
+  geom_point()
+wind.base.plot
+```
+
+#### 6. Briefly describe the relationship between RSpd and CSpd. (Hint: you should use 3 key words in a complete setence that includes referencing the variables.)
+
+The reference site speed and the candidate site speed appear to be positively correlated in a fairly strong linear fashion.
+
+#### 7. Calculate the correlation coefficient for the two variables (you may use a built-in R function). Print the result.
+
+```{r}
+cor(wind$RSpd,wind$CSpd)
+```
+
+#### 8. Briefly interpret the number you calculated for the correlation coefficient (what is the direction and strength of the correlation?).
+
+Since the correlation coefficient is positive, this indicates a positive linear trend for RSpd and CSpd, which is consistent with the information displayed in the scatterplot. A value of 0.756 indicates a fairly strong association.
+
+
+#### 9. Mathematically write out the theoretical/general simple linear regression model for this data set (using parameters ($\beta$s), not estimates, and not using matrix notation). Clearly explain which part of the model is deterministic and which part is random. Do not use "x" and "y" in your model - use variable names that are fairly descriptive.
+
+$\text{CSpd}_i = \beta_0+\beta_1*\text{RSpd}_i+\epsilon_i\overset{\mathrm{iid}}{\sim} N(0,\sigma^2)\ $
+
+$\text{CSpd}_i = \beta_0+\beta_1*\text{RSpd}_i \text{ is all deterministic, while } \epsilon_i\overset{\mathrm{iid}}{\sim} N(0,\sigma^2)\  \text{ is *random*, or rather unknown due to unknown variation.}$
+
+#### 10. Add the OLS regression line to the scatterplot you created in 4. Print the result. You can remove the standard error line with the option `se = FALSE`.
+
+```{r, fig.align='center'}
+wind.base.plot <- wind.base.plot + geom_smooth(method = "lm", se = FALSE, col="deepskyblue3")
+wind.base.plot
+```
+
+
+#### 11. (a) Apply linear regression to the data. (b) Print out a summary of the results from the `lm` function. (c) Save the residuals and fitted values to the `wind` tibble. (d) Print the first few rows of the `wind` tibble.
+
+```{r}
+wind.lm <- lm(CSpd ~ RSpd, data = wind)
+summary(wind.lm)
+wind.lm
+wind$Residuals <- wind.lm$residuals
+wind$FittedMPG <- wind.lm$fitted.values
+head(wind)
+```
+
+#### 12. Briefly explain the rational behind the ordinary least-squares model fit (how does OLS choose the parameter estimates?).
+
+Superficially, it takes the Sum of Squares error and divides that by the degrees of freedom for error.
+
+#### 13. Mathematically write out the fitted simple linear regression model for this data set using the coefficients you found above (do not use parameters/$\beta$s and do not use matrix notation). Do not use "x" and "y" in your model - use variable names that are fairly descriptive.
+
+$\text{CSpd}_i = 3.1412+0.7557*\text{RSpd}_i$
+
+#### 14. Interpret the coefficient for the slope.
+
+Slope: CSpd increases by 0.7557, on average, with every additional unit of speed measured at a reference site. 
+
+#### 15. Interpret the coefficient for the intercept.
+
+Intercept: When a reference site has wind speed of 0, the average wind speed for a corresponding candidate site will be 3.1412.
+
+#### 16. What is the average wind speed at the candidate site (CSpd) when the wind speed at the reference site (RSpd) is 12 m/s? Show your code, and print the result.
+
+```{r}
+wind.lm$coefficients[1] + wind.lm$coefficients[2] * 12
+```
+
+#### 17. Briefly explain why it would be wrong to answer this question: What is the average wind speed at the candidate site (CSpd) when the wind speed at the reference site (RSpd) is 25 m/s?
+
+Because we have no data where the wind speeds were that high, we would have to extrapolate which is improper with our model.
+
+#### 18. Calculate the estimate of $\sigma^2$, the average squared variability of the residuals around the line. Show your code, and print the result.
+
+```{r}
+sum(wind$Residuals ^ 2) / wind.lm$df.residual
+```
+
+#### 19. Create the design matrix and store it in a variable. Print the first few rows of the design matrix.
+
+```{r}
+RSpd<-matrix(wind$RSpd)
+X<-cbind(1,RSpd)
+head(X)
+```
+
+#### 20. Obtain, and print, the parameter estimates for this data set (found above using `lm`) using matrix multiplication. You should use the following in your computations: t() [tranpose], solve() [inverse], %*% [matrix multiplicaiton].
+
+```{r}
+Y<-wind$CSpd
+solve(t(X)%*%(X)) %*% (t(X)%*%Y)
+```
+
+#### 21. Briefly summarize what you learned, personally, from this analysis about the statistics, model fitting process, etc.
+
+I gained a better understanding of how the matrix notation can be used to find the values we look for when fitting a simple linear model to data. From the technical side, I became far more comfortable using R to perform the analysis (i.e. using lm() and creating plots)
+
+#### 22. Briefly summarize what you learned from this analysis *to a non-statistician*. Write a few sentences about (1) the purpose of this data set and analysis and (2) what you learned about this data set from your analysis. Write your response as if you were addressing a business manager (avoid using statistics jargon) and just provide the main take-aways.
+
+This data set gave us wind speeds for candidate and reference sites for wind farms. Through our analysis, we found that wind speeds for both types of sites are linearly correlated, thus we are able to simply and reliably estimate wind speeds for candidate sites based on reference site data from 0 to ~20 mph. 

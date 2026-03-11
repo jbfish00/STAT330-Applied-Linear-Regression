@@ -1,0 +1,186 @@
+---
+title: "Homework 9"
+subtitle: <center> <h1>Regression with Nonlinear Effects</h1> </center>
+author: <center> < JACOB FISHER > <center>
+output: html_document
+---
+
+<style type="text/css">
+h1.title {
+font-size: 40px;
+text-align: center;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(splines)
+```
+
+## Data and Description
+
+See the attached data description.
+
+#### 0. Replace the text "< PUT YOUR NAME HERE >" (above next to "author:") with your full name.
+
+#### 1. Read in the data set, and call the data frame `snow`. Make sure the core variable is a factor (if they are not, you'll need to make them factors). Print a summary of the data and make sure the data makes sense.
+
+```{r}
+snow <- read.csv("snow_core.csv") %>% 
+  mutate(Core = as.factor(Core))
+summary(snow)
+```
+
+#### 2. What is your outcome? What is/are your explanatory variable(s)?
+
+Density is the outcome variable with depth and core number as our explanatory variables.
+
+
+#### 3. Fit a linear model using depth as a linear effect. Also, include an effect for core BUT NO INTERACTION. 
+
+```{r}
+lm_snow <- lm(Density ~ Depth+Core ,data = snow)
+lm_snow
+```
+
+#### 4. For this model, calculate the AIC. 
+
+```{r}
+AIC(lm_snow)
+```
+
+#### 5. Fit a linear model using depth as a linear effect and an interaction with core. That is, a model with a line for each core. Use the predict function to save the model fit as `pred.linear` in the `snow` data frame. Save the residuals as `resid.linear` in the `snow` data frames. You will use these in problems 7 and 8. 
+
+```{r}
+lm_cores <- lm(Density ~ Depth+Depth*Core ,data = snow)
+lm_cores
+
+snow$resid.linear<-resid((lm_cores))
+```
+
+#### 6. For this model, calculate the AIC. 
+
+```{r}
+AIC(lm_cores)
+```
+
+#### 7. For the first site (Core = 1), plot the data and your model fit together.
+
+
+```{r}
+ggplot(subset(snow, Core == 1), aes(x = Depth, y = Density)) +
+  geom_point() +
+  geom_smooth() +
+  theme(aspect.ratio = 1)
+
+```
+
+#### 8. For the first site (Core = 1), plot the residuals against depth. Comment on the pattern.
+
+
+```{r}
+# Create a scatter plot of residuals versus depth
+ggplot(subset(snow, Core == 1), aes(x = Depth, y = resid.linear)) +
+  geom_point() +
+  theme(aspect.ratio = 1)
+
+```
+
+The residuals differ from zero more at the extremes and are more uniform towards the middle, though there is a seeming quadratic trend to the residuals.
+
+
+#### 9. Fit a model using a cubic polynomial for depth. Also, include an effect for core BUT NO INTERACTION.
+
+```{r}
+lm_poly_cub = lm(Density ~ Depth + poly(Core,3),data = snow)
+lm_poly_cub
+```
+
+#### 10. For this model, calculate the AIC. 
+
+```{r}
+AIC(lm_poly_cub)
+```
+
+#### 11. Fit a model using a cubic polynomial for depth and an interaction with core. That is, a model with a unique cubic polynomial for each core. Something like `lm(Density ~ Core * poly(Depth,3))`.
+
+```{r}
+lm_poly_cubcore<-lm(Density ~ Core * poly(Depth,3), data=snow)
+lm_poly_cubcore
+```
+
+#### 12. For this model, calculate the AIC. 
+
+```{r}
+AIC(lm_poly_cubcore)
+
+```
+
+
+#### 13. Fit a model using a cubic spline for depth. Place a knot at 10 meters depth. Also, include an effect for core BUT NO INTERACTION.
+
+```{r}
+lm_spline_cub = lm(Density ~ Core + 
+                      bs(Depth,knots = 10, degree = 3),
+                    data = snow)
+lm_spline_cub
+```
+
+#### 14. For this model, calculate the AIC. 
+
+```{r}
+AIC(lm_spline_cub)
+
+```
+
+#### 15. Fit a model using depth as cubic spline for depth and an interaction with core. Again, place a knot at 10 meters depth. That is, a model with a unique cubic spline for each. Use the predict function to save the model fit as `pred.spline` in the `snow` data frame. Save the residuals as `resid.spline` in the `snow` data frames.
+
+```{r}
+lm_spline_cubint = lm(Density ~ Core + Core*Depth +
+                      bs(Depth,knots = 10, degree = 3),
+                    data = snow)
+snow$pred.spline<-predict(lm_spline_cubint)
+snow$resid.spline <- resid(lm_spline_cubint)
+```
+
+#### 16. For this model, calculate the AIC. 
+
+```{r}
+AIC(lm_spline_cubint)
+```
+
+
+#### 17. For the first site (Core = 1), plot the data and your model fit together to verify that it is effectively capturing the snow density curve. This should be the cubic spline model with interactions. 
+
+```{r}
+ggplot(subset(snow, Core == 1), aes(x = Depth, y = Density)) +
+  geom_point() +
+  geom_line(aes(y = pred.spline), color = "blue") +
+  labs(title = "Snow Density for Core1",
+       x = "Depth",
+       y = "Density")
+
+```
+
+#### 18. For the first site (Core = 1), plot the residuals of your model against depth. Comment on the pattern. This should be the cubic spline model with interactions. 
+
+```{r}
+ggplot(subset(snow, Core == 1), aes(x = Depth, y = resid.spline)) +
+  geom_point() +
+  labs(title = "Residuals of Cubic Spline Model with Interactions for Core1",
+       x = "Depth",
+       y = "Residuals")
+```
+
+The residuals here are all far closer around zero than the previous residuals graph. There is more negative deviation at the extremes, but still very good looking.
+
+
+#### 19. Of the six models fit, present your best model (in terms of AIC). Describe in words what your final model does. For example, is it one curve for all sites or a curve for each site? What are some advantages or disadvantages of your model?
+
+The cubic polynomial has the lowest AIC and is thus the best model based on that metric. This model makes a cubic model for each core with no interaction. The coefficients cannot be interpreted which can be great disadvantages, but the model seems to fit the data well and therefore gives us the best predictive power.
+
+
+#### 20. Briefly summarize what you learned, personally, from this analysis about the statistics, model fitting process, etc.
+
+I gained a better understanding of different non-linear modeling and how to test the fit of each model. These models include splines and polynomial functions.

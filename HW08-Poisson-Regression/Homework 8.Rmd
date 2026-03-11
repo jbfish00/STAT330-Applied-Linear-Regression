@@ -1,0 +1,284 @@
+---
+title: "Homework 8"
+subtitle: <center> <h1>Poisson Regression</h1> </center>
+author: <center> < JACOB FISHER > <center>
+output: html_document
+---
+
+<style type="text/css">
+h1.title {
+font-size: 40px;
+text-align: center;
+}
+</style>
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(corrplot)  # for the correlation matrix
+library(bestglm)  # for variable selection
+library(car)
+#library(MASS)  # for negative binomial regression
+#library(pscl)  # for zero-inflated regression
+```
+
+## Data and Description
+
+Bike sharing systems are the new generation of traditional bike rentals where the process from membership, rental and return back has become automatic. Through these systems, users are able to easily rent a bike from a particular position and return back at another position. Currently, there are about over 500 bikesharing programs around the world which is composed of over 500,000 bicycles. Today, there exists great interest in these systems due to their important role in traffic, environmental and health issues.
+
+The bike-sharing rental process is highly correlated with environmental and seasonal settings. For instance, weather conditions, precipitation, day of week, season, hour of the day, etc. can affect the volume of rentals. This dataset is composed from the two-year historical data corresponding to years 2011 and 2012 from the Capital Bikeshare system in Washington D.C. The daily counts of the number of bikes used was extracted and then the corresponding weather and seasonal information was added.
+
+The data set has information for 731 days and contains the following variables:
+
+Variable   | Description
+---------- | -------------
+season     | Season (Fall, Spring, Summer, Winter)
+yr         | Year (2011, 2012)
+holiday    | Was the day a holiday (Yes/No)?
+workingday | Was the day a working day (Yes/No)? (Yes if the day is neither a weekend nor a holiday)
+weathersit | Weather (Clear, Light Precip, Misty)
+temp       | Normalized temperature in Celsius
+hum        | Normalized humidity
+windspeed  | Normalized windspeed
+cnt        | Number of bikes rented
+
+The data can be found in the Bikes data set on Canvas. Download Bikes.csv, and put it in the same folder as this R Markdown file.
+
+#### 0. Replace the text "< PUT YOUR NAME HERE >" (above next to "author:") with your full name.
+
+#### 1. Read in the data set, and call the data frame "bikes". Make sure the yr and character variables are factors (if they are not, you'll need to make them factors). Print a summary of the data and make sure the data makes sense.
+
+```{r}
+bikes<-read.csv("Bikes.csv") %>% 
+  mutate_if(is.character, as.factor)
+summary(bikes)
+```
+
+#### 2. Explore the data: create a histogram for the response. *Briefly describe the shape of the distribution - you should mention (1) symmetry or skewness, (2) the number of modes, and (3) potential outliers.*
+
+```{r, fig.align='center'}
+ggplot(data = bikes) + 
+  geom_histogram(mapping = aes(x = cnt, y = ..density..), 
+                 binwidth = 500) +
+  theme_bw() + 
+  theme(aspect.ratio = 1)
+```
+
+This distribution looks almost normal centered around 4400 but with two additional modes (one around 1900 and another around 7500). Based on the above histogram, no obvious outliers present themselves, though they still may exist.
+
+#### 3. Briefly explain why traditional multiple linear regression methods are not suitable for *this* data set. You should mention at least two of the reasons we discussed in class (*your reasons should refer to this data set (i.e. be specific, not general)*).
+
+It would not make sense to have a prediction of negative value with this data since we cannot have negative bike rentals. Additionally, it would not be unreasonable to assume that linearity is violated since one would expect spikes in bike rentals throughout a given year.
+
+#### 4. Use a variable selection procedure to help you decide which, if any, variables to omit from the Poisson regression model you will soon fit. You may choose which selection method to use (best subsets, forward, backward, sequential replacement, LASSO, or elastic net) and which metric/criteria to use (AIC, BIC, or CV/PMSE).
+
+```{r, fig.align='center'}
+bikes_best_subsets_bic <- bestglm(as.data.frame(bikes),
+                                  IC = "BIC",
+                                  method = "exhaustive",
+                                  TopModels = 1,
+                                  family = poisson)
+summary(bikes_best_subsets_bic$BestModel)
+```
+
+#### 5. Write out the Poisson regression model for this data set using the covariates that you see fit. You should use parameters/Greek letters (NOT the "fitted" model using numbers...since you have not fit a model yet;) ). Be sure to use indicator variables, if necessary. (You will need to split the equation on multiple lines to have it render properly as an HTML file.)
+
+$$
+\text{log(}\mu_i)=\beta_0 + \beta_1\text{I(season=Spring)} + \\\beta_2\text{I(season.Summer)} + 
+\\\beta_3\text{I(season.Winter)} + \\\beta_4\text{I(year.2012)} + \\\beta_5\text{I(holiday.Yes)} + \\\beta_6\text{I(workingday.Yes)} + \\\beta_7\text{I(weathersit.Light_Precip)} + \\\beta_8\text{I(weathersit.Misty)} + 
+\\\beta_9\text{(temp)}_i + \beta_{10}\text{(hum)}_i + \beta_{11}\text{(windspeed)}_i
+$$
+
+#### 6. Fit a Poisson regression model using the covariates that you used in the previous question (use the `glm` function - do not just call the result from the variable selection procedure). Print a summary of the results.
+
+```{r, fig.align='center'}
+bikes_poisson <- glm(cnt ~  season + 
+                       yr + holiday + workingday +
+                       weathersit + temp + hum + windspeed,
+                     data = bikes, 
+                     family = poisson(link = "log")) 
+summary(bikes_poisson)
+```
+
+
+
+
+
+### The next several questions involve using diagnostics to check the Poisson regression model assumptions. For each assumption, (1) code the diagnostic(s) that I indicate (next to the assumption in parentheses) to determine if the assumption is violated, and (2) explain whether or not you think the assumption is violated and why you think that.
+
+
+
+
+#### 7. The X's vs log(y) are linear (use scatterplots and partial regression (added-variable) plots for continuous variables)
+
+```{r, fig.align='center'}
+ggplot(data = bikes, mapping = aes(y = log(cnt + 1), x = temp)) +
+  geom_point() +
+  theme_bw() +
+  theme(aspect.ratio = 1)
+
+ggplot(data = bikes, mapping = aes(y = log(cnt + 1), x = hum)) +
+  geom_point() +
+  theme_bw() +
+  theme(aspect.ratio = 1)
+
+ggplot(data = bikes, mapping = aes(y = log(cnt + 1), x = windspeed)) +
+  geom_point() +
+  theme_bw() +
+  theme(aspect.ratio = 1)
+
+# Use added variable plots for any continuous predictors you included in the
+# model
+avPlots(bikes_poisson, terms = ~ temp)
+avPlots(bikes_poisson, terms = ~ hum)
+avPlots(bikes_poisson, terms = ~ windspeed)
+```
+None of the above scatterplots look particularly linear, and though the windspeed AV plot gives some hope for the linearity assumption for that variable it is not enough to accept the linearity assumption, so I am going to reject that assumption.
+
+#### 8. The observations are independent (no diagnostic tools - just think about how the data was collected and briefly write your thoughts)
+
+It does not seem like the observations would be independent since there is no random selection of the data. It seems that the data is just all the data from 2011 and 2012. Any data from two consecutive days would likely depend on each other.
+
+#### 9. Assess whether there are no influential points (use Cook's distance)
+
+```{r, fig.align='center'}
+# Cook's Distance
+bikes.cooks <- data.frame("cooks.distance" = cooks.distance(bikes_poisson))
+bikes.cooks$obs <- 1:nrow(bikes)
+
+ggplot(data = bikes.cooks) + 
+  geom_point(mapping = aes(x = obs, y = abs(cooks.distance))) +
+  geom_hline(mapping = aes(yintercept = 4/ length(obs)),
+             color = "red", linetype = "dashed") +  # for n > 30
+  geom_hline(mapping = aes(yintercept = 5),
+             color = "red", linetype = "dashed") +  # for n > 30
+  theme_bw() +
+  theme(aspect.ratio = 1)
+```
+
+Based on Cook's distance, most points would count as influential points. Even if we chose some arbitrary cutoff (e.g. 5) to preclude most points from being outliers, we still end up with at least 5 influential points.
+
+#### 10. Do you think additional predictor variables are required (no diagnostic tools - just think about the variables you have and if there are other variables you think would help predict the response)
+
+We included all factors on which we have data in our model, so by default I will say no.
+
+
+#### 11. Check multicollinearity (use variance inflation factors)
+
+```{r, fig.align='center'}
+vif(bikes_poisson)
+```
+I was worried that seasons would be multicolinear, but that does not appear to be the case. No other factors appear to be colinear.
+
+
+#### 12. Mean = Variance (no overdispersion/underdispersion) (use the three methods discussed in class)
+```{r, fig.align='center'}
+mean(bikes$cnt)
+var(bikes$cnt)
+
+# Conduct the formal test
+pchisq(bikes_poisson$deviance, 
+       bikes_poisson$df.residual, 
+       lower.tail = FALSE)
+
+# Fit a Quasi-Poisson model and look at the dispersion parameter estimate 
+bikes_quasipoisson <- glm(cnt ~  season + 
+                       yr + holiday + workingday +
+                       weathersit + temp + hum + windspeed,
+                       data = bikes, 
+                          family = quasipoisson(link = "log")) 
+summary(bikes_quasipoisson)
+```
+
+The mean and variance and not even close to each other, the p-value is 0 for the chi-squared test, so there is clear overdispersion, and the dispersion parameter for the quasi-poisson is rather large, thus we reject the over/underdispersion assumption.
+
+
+### Regardless of your assessment of the assumptions, proceed as if all assumptions were met.
+
+
+
+
+#### 13. For the coefficient for holiday, compute (and output) $\beta_{holiday}$ (pull this value from the model output), $\exp\{\beta_{holiday}\}$, and $100 \times (\exp\{\beta_{holiday}\} - 1)%$.
+
+```{r, fig.align='center'}
+beta_holiday<-(-1.654e-01)
+beta_holiday
+```
+
+#### 14. Interpret the coefficient for holiday based on the last TWO different ways we discussed in class (for negative coefficients).
+
+*Interpretation 1:* Holding all else constant, if the given day is a holiday, we estimate the log of the average number of total bikes rented decreases by 0.1654.
+
+
+*Interpretation 2:* Since -0.1654<0, we estimate the log of the average number of total bike rentals decreases if the day is a holiday, holding all else constant.
+
+#### 15. Create (and output) 95% confidence intervals for $\beta_k$, $\exp\{\beta_k\}$, and $100 \times (\exp\{\beta_k\} - 1)%$ for all predictors using the `confint` function.
+
+```{r, fig.align='center'}
+bikes_ci <- confint(bikes_poisson)
+bikes_ci
+exp(bikes_ci)
+(exp(bikes_ci) - 1) * 100
+```
+
+#### 16. Interpret the 95% confidence intervals for temp for $\beta_{temp}$, $\exp\{\beta_{temp}\}$, and $100 \times (\exp\{\beta_{temp}\} - 1)%$ (three interpretations total).
+
+*Interpretation using $\beta_{temp}$:* Holding all else constant, we are 95% confident that as temperature increases by 1 degree, the log mean of bike rentals increases by between (1.21024748, 1.23259907).
+
+*Interpretation using $\exp\{\beta_{temp}\}$:* Holding all else constant, we are 95% confident that as temperature increases by 1 degree, the mean of bike rentals increases by between (3.3543147, 3.4301331).
+
+*Interpretation using $100 \times (\exp\{\beta_{temp}\} - 1)%$:* Holding all else constant, we are 95% confident that as temperature increases by 1 degree, the percentage change in mean of bike rentals increases by between (235.431467, 243.013312).
+
+#### 17. Calculate (and output) a 95% confidence interval (and point estimate) for the predicted average number of bike rentals for a day where season = "Spring", yr = "2012", holiday = "No", workingday = "Yes", weathersit = "Misty", temp = 0.34, hum = 0.80, and windspeed = 0.18. Note that you may not need to use all of these values depending on the variables you chose to include in your model. *Interpret the interval.*
+
+```{r, fig.align='center'}
+new_day <- data.frame(season = "Spring", 
+                      yr = 2012,
+                      holiday = "No", 
+                      workingday = "Yes", 
+                      weathersit = "Misty",
+                      temp = 0.34,
+                      hum = .8,
+                      windspeed = .18)
+
+pred_log <- predict(bikes_poisson, 
+                    newdata = new_day, 
+                    se.fit = TRUE)
+
+# Compute the margin of error
+me <- qnorm(0.975) * pred_log$se.fit
+
+# Compute the 95% confidence interval (and point estimate) for the log of
+# the average number of crashes
+pred_interval <- pred_log$fit + c(-1, 0, 1) * me
+
+# Compute the 95% confidence interval (and point estimate) for the predicted 
+# average number of total crashes
+round(exp(pred_interval), 2)
+```
+
+On a day with the above specified conditions, we are 95% confident that the estimated average number of bike rentals will be between (3055.59, 3078.17).
+
+#### 18. Compute (and output) the likelihood ratio test statistic for the model, and compute (and output) the associated $p$-value. Based on the results, what do you conclude?
+
+```{r, fig.align='center'}
+like_ratio <- bikes_poisson$null.deviance - bikes_poisson$deviance
+like_ratio
+pchisq(like_ratio, df = 11, lower.tail = FALSE)
+```
+With a huge likelihood ratio and a p-value of 0, we conclude that at least one beta is not equal to 0.
+
+
+#### 19. Compute (and output) the pseudo $R^2$ value for the model.
+
+```{r, fig.align='center'}
+1 - (bikes_poisson$deviance / bikes_poisson$null.deviance)
+```
+
+#### 20. Briefly summarize what you learned, personally, from this analysis about the statistics, model fitting process, etc.
+
+I learned how to test whether or not poisson modeling is appropriate for a data set. Further I gained more experience in variable selection, and interpreting intervals and values that are on the log scale.
+
+
+#### 21. Briefly summarize what you learned from this analysis *to a non-statistician*. Write a few sentences about (1) the purpose of this data set and analysis and (2) what you learned about this data set from your analysis. Write your response as if you were addressing a business manager (avoid using statistics jargon) and just provide the main take-aways.
+
+The purpose of this data set is to be able to predict the average number of bikes rented based on particular factors such as season, weather, temperature, etc. In reality, this set is not conducive to poisson regression. Despite this, through doing poisson regression we found that all factors we have data on are incredibly significant in determining how many bikes would be rented on a particular day. Using another method of regression would probably we advised.

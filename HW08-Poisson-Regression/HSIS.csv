@@ -1,0 +1,208 @@
+AADT,MEDWID,MED_TYPE,LSHLDWID,LSHL_TYP,SURF_WID,RSHLDWID,RSHL_TYP,NO_LANES,LANEWID,RODWYCLS,TOTALCRASHES
+20850,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,10
+20700,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,6
+20700,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,0
+20700,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,2
+20700,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,4
+20700,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,1
+20700,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,0
+20700,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,1
+20700,>30,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,9
+20100,>30,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,2
+20100,>30,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,2
+20100,>30,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,9
+25500,>30,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,1
+20900,>30,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,6
+20900,>30,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,3
+20900,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,0
+20900,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,0
+20900,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,0
+20900,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,1
+20900,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,7
+20900,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,2
+20900,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,7
+22300,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,2
+22300,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,5
+22300,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,4
+22300,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,5
+18900,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,13
+19300,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,10
+19300,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,1
+19300,>30,No Barrier,<= 4 feet,Bitum Conc,> 24 feet,8 feet,Bitum Conc,4 lanes,> 12 feet,Rural,1
+19300,>30,No Barrier,<= 4 feet,Bitum Conc,> 24 feet,8 feet,Bitum Conc,4 lanes,> 12 feet,Rural,10
+23000,>30,No Barrier,<= 4 feet,Bitum Conc,> 24 feet,8 feet,Bitum Conc,4 lanes,> 12 feet,Rural,4
+23000,>30,No Barrier,<= 4 feet,Bitum Conc,> 24 feet,8 feet,Bitum Conc,4 lanes,> 12 feet,Rural,8
+23000,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,1
+23000,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,29
+30800,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,12
+33500,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,31
+32500,>30,No Barrier,<= 4 feet,Bitum Conc,> 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,18
+32500,>30,No Barrier,<= 4 feet,Bitum Conc,> 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,0
+32500,>30,No Barrier,<= 4 feet,Bitum Conc,> 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,10
+32500,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,1
+32500,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,0
+32500,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,0
+32500,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,0
+32500,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,1
+32500,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,0
+28000,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,16
+28000,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,0
+28000,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,4
+28000,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,2
+31000,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,7
+31000,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,3
+31000,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,1
+31000,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,0
+31000,1-30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,46
+25818,1-30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,6
+25818,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+25818,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+29294,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,9
+29294,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,3
+29294,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,0
+29294,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,3
+29294,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,4
+29294,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,11
+29294,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,0
+29294,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,4
+29294,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,2
+29294,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,15
+29294,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Rural,1
+33266,VR,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,48
+33266,>30,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,0
+33266,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,20
+37734,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,60
+38152,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,20
+43172,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,6
+43172,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,17
+52364,>30,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,45
+75525,>30,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,13
+75525,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,0
+75525,VR,No Barrier,<= 4 feet,Other,> 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,8
+83581,VR,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Urban,9
+83581,VR,No Barrier,> 4 feet ,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Urban,0
+83581,1-30,Barrier,> 4 feet ,Other,> 24 feet,8 feet,Other,> 4 lanes,> 12 feet,Urban,13
+98829,1-30,Barrier,> 4 feet ,Other,> 24 feet,8 feet,Other,> 4 lanes,> 12 feet,Urban,37
+76532,VR,No Barrier,> 4 feet ,Bitum Conc,> 24 feet,10 feet,Bitum Conc,> 4 lanes,12 feet,Rural,7
+66198,1-30,Barrier,<= 4 feet,Bitum Conc,> 24 feet,10 feet,Bitum Conc,> 4 lanes,12 feet,Rural,12
+66198,1-30,Barrier,<= 4 feet,Bitum Conc,> 24 feet,10 feet,Bitum Conc,> 4 lanes,12 feet,Rural,9
+66198,1-30,Barrier,<= 4 feet,Bitum Conc,> 24 feet,10 feet,Bitum Conc,> 4 lanes,12 feet,Urban,6
+66198,1-30,Barrier,> 4 feet ,Bitum Conc,> 24 feet,10 feet,Bitum Conc,> 4 lanes,12 feet,Urban,1
+65934,1-30,Barrier,> 4 feet ,Bitum Conc,> 24 feet,10 feet,Bitum Conc,> 4 lanes,12 feet,Urban,19
+65934,1-30,Barrier,> 4 feet ,Bitum Conc,> 24 feet,10 feet,Bitum Conc,> 4 lanes,12 feet,Urban,1
+45954,>30,No Barrier,<= 4 feet,Bitum Conc,> 24 feet,10 feet,Bitum Conc,> 4 lanes,12 feet,Urban,2
+45954,>30,No Barrier,<= 4 feet,Bitum Conc,> 24 feet,10 feet,Bitum Conc,> 4 lanes,12 feet,Urban,3
+45954,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,3
+45954,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,0
+46000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,0
+46000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,10
+41000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,14
+41000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,15
+41000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,10
+41000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,4
+41000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,0
+35000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,6
+35000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,18
+35000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,8
+35000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+35000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,7
+27000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,9
+27000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,0
+27000,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,10
+24300,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,7
+24300,VR,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,8
+24300,VR,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,9
+24300,VR,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,4
+24300,VR,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,12
+24300,VR,No Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Rural,1
+24300,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,8
+21314,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,4
+21314,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,12
+20418,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,2
+20418,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,1
+20418,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,1
+20418,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,1
+19721,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,13
+19123,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,13
+19123,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,3
+19123,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,0
+19123,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,1
+20617,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,0
+20617,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,0
+20617,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,13
+20617,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,1
+18725,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,2
+16832,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,2
+16832,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,1
+16832,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,5
+16832,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,0
+16832,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,8
+16832,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,4
+16832,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,6
+16832,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,3
+16832,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,1
+15338,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,17
+15338,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,0
+15338,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,4
+13944,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,2
+13944,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,11
+13944,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,6
+13944,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,5
+13944,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,3
+14542,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,10
+14542,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,0
+14542,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,1
+14542,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,10
+14542,>30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Rural,6
+14542,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,6
+14542,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,43
+14542,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,4
+16434,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,8
+16434,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,18
+17629,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,12
+17629,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,14
+17629,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,4
+17629,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,22
+23904,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,8
+19223,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,14
+19223,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,7
+19223,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,7
+25298,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,8
+25298,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,3
+25298,>30,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,37
+24700,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Rural,30
+24000,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+24000,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,3
+24000,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,5
+23600,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+23600,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+23600,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+23600,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+23600,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,5
+32500,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,4
+32500,VR,No Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+32500,1-30,Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+32500,1-30,Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+28500,1-30,Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,1
+28500,1-30,Barrier,<= 4 feet,Bitum Conc,<= 24 feet,10 feet,Bitum Conc,4 lanes,12 feet,Urban,4
+28500,1-30,No Barrier,<= 4 feet,Bitum Conc,> 24 feet,10 feet,Bitum Conc,> 4 lanes,12 feet,Urban,9
+35500,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,8
+41500,1-30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,3
+41500,1-30,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,6
+42500,1-30,No Barrier,> 4 feet ,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,11
+42500,1-30,No Barrier,> 4 feet ,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,8
+42500,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,27
+44500,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,2
+44500,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,> 4 lanes,12 feet,Urban,1
+44500,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,> 4 lanes,12 feet,Urban,1
+44500,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,18
+51000,VR,No Barrier,<= 4 feet,Other,<= 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,6
+51000,1-30,No Barrier,> 4 feet ,Other,> 24 feet,10 feet,Other,> 4 lanes,12 feet,Urban,13
+35000,1-30,No Barrier,> 4 feet ,Other,<= 24 feet,10 feet,Other,4 lanes,> 12 feet,Urban,0
+35000,1-30,No Barrier,> 4 feet ,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,14
+31000,1-30,Barrier,> 4 feet ,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,7
+31000,1-30,Barrier,> 4 feet ,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,9
+31000,1-30,Barrier,> 4 feet ,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,1
+31000,1-30,Barrier,> 4 feet ,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,1
+31000,1-30,Barrier,> 4 feet ,Other,<= 24 feet,10 feet,Other,4 lanes,12 feet,Urban,6
+18000,1-30,Barrier,<= 4 feet,Other,> 24 feet,8 feet,Other,4 lanes,> 12 feet,Urban,5

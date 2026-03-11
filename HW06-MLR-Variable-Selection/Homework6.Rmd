@@ -1,0 +1,322 @@
+---
+title: "GDP Growth by Coutnry"
+author: "<center> < JACOB FISHER > <center>"
+subtitle: <center> <h1>Multiple Linear Regression Variable Selection Methods</h1>
+  </center>
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+<style type="text/css">
+h1.title {
+font-size: 40px;
+text-align: center;
+}
+</style>
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(corrplot)  # colored correlation matrix
+library(ggfortify)  # plot glmnet objects using ggplot instead of base R
+library(car)  # needed for added-variable plots and dfbetas and dffits
+library(bestglm)  # for stepwise methods
+library(glmnet)  # for ridge, lasso, and elastic net
+set.seed(12345)
+```
+
+## Data and Description
+
+What spurs economic growth? These data consist of economic data from 88 countries  The dataset \texttt{gdp\_sub.csv} contains the following information for each country:
+\begin{center}
+\begin{tabular}{ll}
+\hline \hline Variable Name & Description \\
+\hline GDPPC_GROWTH & Growth of GDP per capita at purchasing power parities between 1960 and 1996. \\
+everything else & See table under content tab (66 indicators)  \\
+\hline \hline
+\end{tabular}
+\end{center}
+The predictors are described in more detail in \texttt{variable\_table.pdf}. In this analysis, we treat GDP Growth per capita at purchasing power parities (\texttt{y} in the dataset) between 1960 and 1996 is the response variable. The other 66 variables are economic variables that we use as explanatory variable with the goal of explaining GDP growth. Many of the covariates are binary (or dummy variables) but most are quantitative. Our goal is to understand what relationships there are between economic indicators and gdp growth.
+
+
+#### 1. Read in the data set, and call the data frame "gdp_data". Print a summary of the data and make sure the data makes sense. Make sute the class of "gdp_data" is a *data.frame only*. Use the `as.data.frame` command.
+
+```{r}
+gdp <- read.csv("C:/Users/jbren/Desktop/STAT_330/HW_06/GDP_data.csv")
+gdp_data <- as.data.frame(gdp)
+summary(gdp)
+```
+
+#### 2. Fit a multiple regression model with all covariates explaining `GDPPC_GROWTH`. Call this model lm_gdp.
+
+```{r, fig.align='center'}
+gdp_lm <- lm(GDPPC_GROWTH ~ ., data = gdp_data)
+summary(gdp_lm)
+```
+
+#### 3. What is the $R^2$ and adjusted-$R^2$? Why are they so different?
+
+$R^2 = 0.9091$ and the Adjusted $R^2 = 0.6235$. The $R^2$ value will always increase with the number of variables that are added while the adjusted $R^2$ will be much lower if the model is significantly overfitting the data.
+
+
+#### 4. Calculate the variance inflation factors for `lm_gdp` and comment on the level of multicollinearity 
+
+```{r, fig.align='center'}
+gdp_vif<-vif(gdp_lm)
+gdp_vif
+max(gdp_vif)
+mean(gdp_vif)
+
+vif_sorted <- sort(gdp_vif, decreasing = TRUE)
+vif_sorted
+```
+There are 43 factors that have a vif value greater than 10, with another 20 values greater than 5. Thus there is a lot of multicolinearity among the factors in this data set. 
+
+### You should have discovered that there is a multicollinearity problem. The goal of this assignment is to continue this analysis by identifying variables to potentially remove from the model to resolve the multicollinearity issues. 
+
+#### 5. Briefly explain why multicollinearity is a problem for multiple linear regression by identifying two consequences of multicollinearity.
+
+Multicolinearity makes it difficult to determine the individual effect of each predictor on the response variable because their coefficients' magnitude and sign can change depending on the other factors in the multiple linear regression model. Furthermore, the precision of coefficient estimates thus the confidence intervals will be wider. 
+
+#### 6. Briefly explain the similarities and differences between the following methods: best subset, forward, backward, and sequential replacement. Do not just copy the algorithm from the class notes - use your own words to explain what these methods are doing.
+
+Best subset fits all models for all possible combinations of predictor variables and picks the best model based on some chosen criterion. 
+
+Each of the below methods are stepwise in their implementation.
+Forward selection starts with a model containing only the intercept, and adds one predictor variable at a time based on the variable that gives the highest increase in the model's fit.
+
+Backward selection starts with a model containing all predictor variables, and removes one predictor variable at a time based on the variable that gives the lowest decrease in the model's fit. 
+
+Sequential replacement is a combonation of forward and backward selection. Variables are added to the model in a forward selection step and then removed from the model in a backward elimination step if the p-value is above a certain threshold. 
+
+#### 7. Briefly explain how shrinkage methods work (variance-bias tradeoff).
+
+Shrinkage methods are a class of regression techniques that address the trade-off between variance and bias. By introducing bias, the variance is decreased, thereby stabilizing the final model. 
+
+#### 8. Briefly explain the similarities/difference between ridge regression, LASSO, and elastic net.
+
+Ridge regression adds a penalty term. The penalty term is proportional to the square of the magnitude of the coefficients, so it shrinks the coefficients towards zero, but not to zero.
+
+LASSO is another method that adds a penalty term. However, the penalty term is proportional to the absolute magnitude of the coefficients, not the square, which has the effect of shrinking some coefficients to be zero. 
+
+Elastic net combines the strengths of ridge regression and LASSO as it can be a special case of each. The weights of the penalties are determined by a tuning parameter that can be adjusted to control the degree of shrinkage.
+
+Each of the above reduce variability in coefficients.
+
+#### 9. Remember, when coding these methods, the response variable must be the last column in the data set for the `bestglm` function to work. Switch the order of the columns in the data set so that GDPPC_GROWTH is last.
+
+```{r, fig.align='center'}
+gdp_data <- gdp_data[,c(2:67,1)]
+```
+
+#### 10.  We are not going to use best subsets variable selection procedure for this data set. How many possible models could there be with 66 predictors? Comment on why it might not be feasible to do best subset selections. 
+
+There are $2^{66}$ possible models, an amount far too high to be able to be able to run ever possible model in any workable amount of time and with any reasonable amount of computer memory.
+
+#### 11. Apply the forward selection procedure to this data set. Use BIC as a model selection criterion. Output a summary of the "best" model.
+
+```{r, fig.align='center'}
+forward_gdp <- bestglm(gdp_data,
+                       IC = "BIC",
+                       method = "forward")
+
+# view variables included in the top 10 models
+forward_gdp$BestModels
+
+# view a summary of the "best" model
+summary(forward_gdp$BestModel)
+```
+
+#### 12. Apply the backward selection procedure to this data set. You may choose which metric you would like to use (ex: AIC, BIC, PMSE). Output a summary of the "best" model.
+
+```{r, fig.align='center'}
+backward_gdp <- bestglm(gdp_data,
+                       IC = "AIC",
+                       method = "backward")
+
+# view variables included in the top 10 models
+backward_gdp$BestModels
+
+# view a summary of the "best" model
+summary(backward_gdp$BestModel)
+```
+
+#### 13. Apply the sequential replacement selection procedure to this data set. Use BIC as a model selection criterion. Output a summary of the "best" model.
+
+```{r, fig.align='center'}
+seqrep_gdp <- bestglm(gdp_data,
+                     IC = "BIC",
+                     method = "seqrep",
+                     t = 100)  # this controls the computation speed
+
+# view a summary of the "best" model
+summary(seqrep_gdp$BestModel)
+```
+
+#### 14. Apply LASSO to this data set using the MSE metric. Output the coefficient values corresponding to the 1 standard error rule (do not output any plots).
+
+```{r, fig.align='center'}
+gdp_x <- as.matrix(gdp_data[, 1:66])
+gdp_y <- gdp_data[, 67]
+
+# use cross validation to pick the "best" (based on MSE) lambda
+#gdp_ridge_cv <- cv.glmnet(x = gdp_x,
+#                          y = gdp_y, 
+#                          type.measure = "mse", 
+#                          alpha = 0)  # 0 is code for "ridge regression"
+
+# plot (log) lambda vs MSE
+#autoplot(gdp_ridge_cv, label = FALSE) +
+#  theme_bw() +
+#  theme(aspect.ratio = 1)
+
+# lambda.min: value of lambda that gives minimum mean cross-validated error
+#gdp_ridge_cv$lambda.min
+# lambda.1se: value of lambda within 1 standard error of the minimum 
+# cross-validated error
+#gdp_ridge_cv$lambda.1se
+
+#coef(gdp_ridge_cv, s = "lambda.min")
+#coef(gdp_ridge_cv, s = "lambda.1se")
+
+gdp_lasso_cv <- cv.glmnet(x = gdp_x,
+                          y = gdp_y, 
+                          type.measure = "mse",
+                          alpha = 1)  # 1 is code for "LASSO"
+
+# plot (log) lambda vs MSE
+#autoplot(gdp_lasso_cv, label = FALSE) +
+#  theme_bw() +
+#  theme(aspect.ratio = 1)
+
+# lambda.min: value of lambda that gives minimum mean cross-validated error
+#gdp_lasso_cv$lambda.min
+# lambda.1se: value of lambda within 1 standard error of the minimum 
+# cross-validated error
+gdp_lasso_cv$lambda.1se
+
+#coef(gdp_lasso_cv, s = "lambda.min")
+coef(gdp_lasso_cv, s = "lambda.1se")
+```
+
+#### 15. Apply Elastic Net to this data set using the MSE metric. Output the coefficient values corresponding to the 1 standard error rule (do not output any plots). For simplicity, let $\alpha = 0.5$. Any value between 0 and 1 is an elastic net model.
+
+```{r, fig.align='center'}
+gdp_elastic_net_cv <- cv.glmnet(x = gdp_x, 
+                                y = gdp_y, 
+                                type.measure = "mse", 
+                                alpha = 0.5)
+
+# plot (log) lambda vs MSE
+#autoplot(gdp_elastic_net_cv, label = FALSE) +
+#  theme_bw() +
+#s  theme(aspect.ratio = 1)
+
+# lambda.min: value of lambda that gives minimum mean cross-validated error
+#gdp_elastic_net_cv$lambda.min
+# lambda.1se: value of lambda within 1 standard error of the minimum 
+# cross-validated error
+gdp_elastic_net_cv$lambda.1se
+
+#coef(gdp_elastic_net_cv, s = "lambda.min")
+#coef(gdp_elastic_net_cv, s = "lambda.1se")
+```  
+
+
+#### 16. Fill in the table below with "X"s (like the one at the end of the course notes: a row for each variable, a column for each variable selection method, an "X" in a cell means the variable was included for that variable selection method).
+
+Variable     | Forward | Backward | Sequential Replacement | LASSO  | Elastic Net
+:--- 		 | :-----: | :-----:  | 		:-----: 	   |:-----: |    :-----:
+AVELF        |         |          |            X           |        |       
+BUDDHA       |         |          |                        |   X    |      X
+CIV72        |         |          |            X           |        |       
+CONFUC       |    X    |          |                        |   X    |      X
+DENS65C      |         |          |            X           |        |      X
+EAST         |    X    |          |            X           |   X    |      X
+EUROPE       |         |          |                        |        |       
+GDPCH60L     |    X    |          |            X           |        |       
+GGCFD3       |    X    |     X    |                        |        |       
+GVR61        |         |     X    |            X           |        |      X
+IPRICE1      |    X    |     X    |            X           |   X    |      X
+LIFE060      |    X    |          |                        |        |     
+MALFAL66     |    X    |          |                        |   X    |      X
+MINING       |    X    |     X    |            X           |        |       
+MUSLIM00     |         |     X    |                        |        |      
+OTHFRAC      |    X    |     X    |                        |        |     
+PRIE P70     |         |          |                        |        |      X
+PRIGHTS      |         |          |            X           |        |      
+P60          |    X    |     X    |            X           |   X    |      X
+RERD         |         |          |                        |   X    |      X
+SAFRICA      |         |          |                        |        |      X
+SPAIN        |    X    |     X    |                        |        |      
+TROPICAR     |         |     X    |            X           |        |      X
+TROPPOP      |         |          |                        |        |      X
+YRSOPEN      |    X    |     X    |                        |        |      X
+
+
+#### 17. Now that you have seen the various results from the different methods, pick a subset of variables that you will include in the model. Which variables do you choose to include in the model? Why?
+
+I would choose GGCFD3, GVR61, IPRICE1, MINING, MUSLIM00, OTHFRAC, P60, SPAIN, TROPICAR, YRSOPEN. Here I chose all factors that were used in the backward selection method because of the high  adjusted $R^2$ value and the simplicity of the model.
+
+#### 18. Create the multiple linear regression model with the variables you listed in the previous question (alternatively, you can call the best model using $BestModel). Print a summary of the results. Save the residuals from this model to the gdp_data dataframe.
+
+```{r, fig.align='center'}
+gdp_lm_subset <- lm(GDPPC_GROWTH ~  GGCFD3 + GVR61 + IPRICE1 + MINING + MUSLIM00 +
+                      OTHFRAC + P60 + SPAIN + TROPICAR + YRSOPEN,
+                     data = gdp_data)
+summary(gdp_lm_subset)
+```
+
+
+
+### Now that you have chosen a model, the next two questions will address interpretation of this model. 
+
+
+
+#### 19. Choose one dummy variable from your model and interpret the result given by the model
+
+Holding all else constant, for a country in the SPAIN categroy, the estimated GDP per capita will decrease each year by an average of 1.4667 currency units more than a country not in the SPAIN category.
+
+#### 20. Choose one continuous variable from your model and interpret the result given by the model.
+
+Holding all else constant, for a one unit increase in the factor IPRICE1, the average estimated GDP per capita will descrease by 0.01114 currency units.
+
+#### 21. Are there influential points (use Cook's Distance)?
+
+```{r, fig.align='center'}
+gdp_data$cooksd <- cooks.distance(gdp_lm_subset)
+
+# plot Cook's distance against the observation number
+ggplot(data = gdp_data) + 
+  geom_point(mapping = aes(x = as.numeric(rownames(gdp_data)), 
+                           y = cooksd)) +
+  ylab("Cook's Distance") +
+  xlab("Observation Number") +
+  geom_hline(mapping = aes(yintercept = 4 / length(cooksd)),
+             color = "red", 
+             linetype = "dashed") +
+  theme(aspect.ratio = 1)
+
+```
+
+We appear to have as few as one and as many as seven influential points in our model.
+
+#### 22. Is multicollinearity still an issue?
+
+
+```{r, fig.align='center'}
+gdp_vif_subset <- vif(gdp_lm_subset)
+gdp_vif_subset
+max(gdp_vif_subset)
+mean(gdp_vif_subset)
+```
+Based on our new model, mulitcolinearity does not appear to be a problem as there are no vifs that are greater than 5.
+
+#### 23. Briefly summarize what you learned, personally, from this analysis about the statistics, model fitting process, etc.
+
+I learned how to use different selection methods to get adequate models that do not use the best subsets variable selection as that can often take an unacceptable amount of time to compute. I also learned how to determine which varaibles are best to select given the models that can be constructed from various selection methods.
+
+#### 24. Briefly summarize what you learned from this analysis *to a non-statistician*. Write a few sentences about (1) the purpose of this data set and analysis and (2) what you learned about this data set from your analysis. Write your response as if you were addressing a business manager (avoid using statistics jargon) and just provide the main take-aways.
+
+This data set looks at GDP per capita growth of 88 coutnries and looks at 65 factors that may be used to help in predicting GDP growth. Since, there are so many factors, many of them overlap in explanatory power, thus we do not want to use all 65 in our predictive model. From our analysis, we can determine that the GGCFD3, IPRICE1, P60, SPAIN, and YRSOPEN factors are significant in estimating average GDP per capita growth for a state.

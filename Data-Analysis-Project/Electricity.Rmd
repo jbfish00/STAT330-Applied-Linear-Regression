@@ -1,0 +1,458 @@
+---
+title: "STAT_330_Data_Analysis_Proj"
+author: "JBF"
+date: "2023-04-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(corrplot)  # for the correlation matrix
+library(bestglm)  # for variable selection
+library(car)  # for the VIFs
+library(pROC)  # for the ROC curve
+library(ROCR)
+library(gridExtra)
+```
+
+```{r}
+#Read in data, change data format, make factor that is the days around and including Chrsitmas
+elec<-read.csv("C:/Users/jbren/Desktop/STAT_330/Data Analysis Project/IrishElectricity.csv")
+elec$Date <- as.Date(elec$Date, format = "%m/%d/%Y")
+elec <- elec[!(format(elec$Date, "%m-%d") %in% c("12-24", "12-25", "12-26")), ]
+
+
+
+
+#elec$day_type <- ifelse(elec$Day %in% c("Sat", "Sun"), "weekend", "weekday")
+elec$month <- months(elec$Date)
+elec$tariff <- ifelse(elec$month %in% c("November", "December"), "pre", "post")
+elec <- elec[,-1]
+elec<-elec[,c(3,1,2,4,5)]
+#Make character vars factors
+elec<-elec %>% mutate_if(is.character, as.factor)
+
+summary(elec)
+```
+
+```{r}
+elec_lm <- lm(Energy ~ MinTemp + tariff +tariff*MinTemp, data = elec)
+summary(elec_lm)
+
+
+
+ggplot(elec, aes(x = Energy, y = predict(elec_lm))) +
+  geom_point() +
+  labs(x = "Actual Energy Consumption", y = "Predicted Energy Consumption")+
+  geom_smooth()
+
+```
+
+
+```{r}
+elec$cooksd <- cooks.distance(elec_lm)
+# plot Cook's distance against the observation number
+ggplot(data = elec) + 
+  geom_point(mapping = aes(x = as.numeric(rownames(elec)), 
+                           y = cooksd)) +
+  ylab("Cook's Distance") +
+  xlab("Observation Number") +
+  geom_hline(mapping = aes(yintercept = 4 / length(cooksd)),
+             color = "red", 
+             linetype = "dashed") +
+  theme(aspect.ratio = 1)
+
+
+#According to Cook's we remove Christmas, Christmas Eve, and Boxing day
+
+```
+
+
+
+
+```{r}
+ggplot(elec,aes(x = MinTemp,y = Energy)) + 
+  geom_point(aes(col = tariff)) +
+  geom_smooth() +
+  theme_bw() +
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+
+
+ggplot(elec,aes(x = MinTemp,y = Energy)) + 
+  geom_point(aes(col = tariff)) +
+    geom_smooth() +
+  facet_wrap(vars(tariff),ncol =2) + 
+  theme(aspect.ratio = 1)
+
+```
+
+```{r}
+elec$Mon <- ifelse(elec$Day == "Mon",1,0)
+elec$Tues <- ifelse(elec$Day == "Tue",1,0)
+elec$Wed <- ifelse(elec$Day == "Wed",1,0)
+elec$Thu <- ifelse(elec$Day == "Thu",1,0)
+elec$Fri <- ifelse(elec$Day == "Fri",1,0)
+elec$Sat <- ifelse(elec$Day == "Sat",1,0)
+elec$Sun <- ifelse(elec$Day == "Sun",1,0)
+
+elec$pretariff<-ifelse(elec$tariff == "pre",0,1)
+
+# 
+# elec$Nov <- ifelse(elec$Day == "November",1,0)
+# elec$Dec <- ifelse(elec$Day == "December",1,0)
+# elec$Jan <- ifelse(elec$Day == "January",1,0)
+# elec$Feb <- ifelse(elec$Day == "February",1,0)
+# elec$Mar <- ifelse(elec$Day == "March",1,0)
+
+summary(elec)
+cor(elec[,-c(3:6)])
+corrplot(cor(elec[,-c(3:6)]), type = "upper")
+```
+
+
+```{r}
+prepost_box<-ggplot(data = elec) +
+  geom_boxplot(mapping = aes(x = factor(tariff, levels = c("pre", "post")), 
+                             y = Energy)) +
+  #geom_jitter(mapping = aes(x = factor(tariff, levels = c("pre", "post")), y = Energy), width = 0.1, alpha = 0.5) +
+  labs(x = "Pre/Post Tariff", y = "Energy")+
+  theme(aspect.ratio = 1)
+
+
+day_box<-ggplot(data = elec) +
+  geom_boxplot(mapping = aes(x = factor(Day, levels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")), 
+                             y = Energy, fill = factor(tariff, levels = c("pre", "post")))) +
+  labs(x = "Day", y = "Energy", fill = "Tariff Timing")+
+  theme(aspect.ratio = 1)#, legend.position = "none")
+
+
+
+holi_box<-ggplot(data = elec) +
+  geom_boxplot(mapping = aes(x = near_holiday, 
+                             y = Energy, fill = factor(tariff, levels = c("pre", "post")))) +
+  labs(x = "Holiday Week", y = "Energy", fill = "Tariff Timing")+
+  theme(aspect.ratio = 1)
+
+prepost_box
+day_box
+
+
+
+
+```
+
+
+
+```{r}
+elec_vif<-vif(elec_lm)
+elec_vif
+mean(elec_vif)
+
+vif_sorted <- sort(elec_vif, decreasing = TRUE)
+vif_sorted
+
+```
+
+
+
+# Correct Model
+
+```{r}
+lm_poly = lm(Energy ~ tariff + poly(MinTemp,1),data = elec)
+lm_poly_int = lm(Energy ~ tariff *poly(MinTemp,1),data = elec) #interaction (*) gives unique polynomical fxn for each level of tariff
+
+elec$pred_poly = predict(lm_poly)
+elec$pred_poly_int = predict(lm_poly_int)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_poly,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_poly_int,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+
+elec$pred_lm = predict(elec_lm)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_lm,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+
+
+summary(lm_poly_int)
+summary(elec_lm)
+```
+
+
+##Assumptions
+
+```{r}
+#Linear
+resid_vs_fit <- autoplot(elec_lm, which = 1, ncol = 1, nrow = 1) +
+  theme(aspect.ratio = 1)
+resid_vs_fit
+
+elec$residuals <- elec_lm$residuals
+
+#Normality
+boxplot <- ggplot(data = elec) +
+  geom_boxplot(mapping = aes(y = residuals)) +
+  theme(aspect.ratio = 1)
+boxplot
+
+#Histogram
+hist <- ggplot(data = elec) + 
+  geom_histogram(mapping = aes(x = residuals, y = ..density..), #..density.. allows us to compare to a normal curve
+                 binwidth = .4) +
+  stat_function(fun = dnorm, #overlays normal curve
+                color = "red", 
+                size = 2,
+                args = list(mean = mean(elec$residuals), 
+                            sd = sd(elec$residuals))) +
+  theme(aspect.ratio = 1)
+hist
+
+#QQ-Plot
+qq <- autoplot(elec_lm, which = 2, ncol = 1, nrow = 1) +
+  theme(aspect.ratio = 1)
+qq
+
+
+#Homoschedasticsty
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###Other Models
+
+```{r}
+lm_poly_quad = lm(Energy ~  tariff + poly(MinTemp,2),data = elec)
+lm_poly_quad_int = lm(Energy ~  tariff *poly(MinTemp,2),data = elec) #interaction (*) gives unique polynomical fxn for each level of tariff
+
+elec$pred_poly = predict(lm_poly_quad)
+elec$pred_poly_int = predict(lm_poly_quad_int)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_poly,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_poly_int,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+lm_poly_cub = lm(Energy ~ tariff + poly(MinTemp,3),data = elec)
+lm_poly_cub_int = lm(Energy ~ tariff *poly(MinTemp,3),data = elec) #interaction (*) gives unique polynomical fxn for each level of tariff
+
+elec$pred_poly = predict(lm_poly_cub)
+elec$pred_poly_int = predict(lm_poly_cub_int)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_poly,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_poly_int,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+lm_spline_linear = lm(Energy ~ tariff + 
+                        bs(MinTemp,knots = quantile(MinTemp,c(0.5)), degree = 1),
+                      data = elec)
+
+lm_spline_linear_int = lm(Energy ~ tariff * 
+                            bs(MinTemp,knots = quantile(MinTemp,c(0.5)), degree = 1
+                               ),
+                          data = elec)
+
+elec$pred_quad_spline = predict(lm_spline_linear)
+elec$pred_quad_spline_int = predict(lm_spline_linear_int)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_quad_spline,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_quad_spline_int,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+lm_spline_quad = lm(Energy ~ tariff + 
+                        bs(MinTemp,knots = quantile(MinTemp,c(0.5)), degree = 2),
+                      data = elec)
+
+lm_spline_quad_int = lm(Energy ~ tariff * 
+                            bs(MinTemp,knots = quantile(MinTemp,c(0.5)), degree = 2
+                               ),
+                          data = elec)
+
+elec$pred_quad_spline = predict(lm_spline_quad)
+elec$pred_quad_spline_int = predict(lm_spline_quad_int)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_quad_spline,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_quad_spline_int,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+lm_spline_cub = lm(Energy ~ tariff + 
+                        bs(MinTemp,knots = quantile(MinTemp,c(0.5)), degree = 3),
+                      data = elec)
+
+lm_spline_cub_int = lm(Energy ~ tariff * 
+                            bs(MinTemp,knots = quantile(MinTemp,c(0.5)), degree = 3
+                               ),
+                          data = elec)
+
+elec$pred_quad_spline = predict(lm_spline_cub)
+elec$pred_quad_spline_int = predict(lm_spline_cub_int)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_quad_spline,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+
+ggplot(elec[order(elec$MinTemp),]) + geom_point(aes(x = MinTemp,y = Energy)) + 
+  geom_line(aes(x = MinTemp,y = pred_quad_spline_int,group = tariff, col = tariff),size = 1.5)+
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        axis.text.x = element_text(size = 12,angle = 270,hjust = 0,vjust = .5),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  theme(aspect.ratio = 1)
+```
+
+###AIC/BIC
+```{r}
+# BIC(lm_prelim)
+# BIC(lm_wage)
+# 
+# BIC(lm_step)
+# BIC(lm_step2)
+
+BIC(elec_lm)
+AIC(elec_lm)
+BIC(lm_poly_int)
+AIC(lm_poly_int)
+
+BIC(lm_poly)
+
+
+BIC(lm_poly_quad)
+BIC(lm_poly_quad_int)
+
+BIC(lm_poly_cub)
+BIC(lm_poly_cub_int)
+
+BIC(lm_spline_linear)
+BIC(lm_spline_linear_int)
+
+BIC(lm_spline_quad)
+BIC(lm_spline_quad_int)
+
+BIC(lm_spline_cubic)
+BIC(lm_spline_cubic_int)
+
+AIC(lm_poly)
+AIC(lm_poly_int)
+
+AIC(lm_poly_quad)
+AIC(lm_poly_quad_int)
+
+AIC(lm_poly_cub)
+AIC(lm_poly_cub_int)
+
+AIC(lm_spline_linear)
+AIC(lm_spline_linear_int)
+
+AIC(lm_spline_quad)
+AIC(lm_spline_quad_int)
+
+AIC(lm_spline_cubic)
+AIC(lm_spline_cubic_int)
+```
